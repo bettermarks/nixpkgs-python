@@ -299,6 +299,14 @@
               condition = version: versionInBetween version "3.15" "3.14.5";
               override = filterOutPatch "hacl-static-ldeps-for-static-modules.patch";
             }
+            {
+              # CPython 3.11.18+/3.12.16+/3.13.18+/3.14.9+/3.15.x wrap the
+              # `knownfiles` list in an `if sys.platform == "win32"` branch, so
+              # nixpkgs' mimetypes.patch (flat-list layout) fails to apply.
+              # Use a replacement patch matching the wrapped layout.
+              condition = version: versionInBetween version "3.16" "3.11.18";
+              override = replacePatch "mimetypes.patch" ./patches/mimetypes-wrapped.patch;
+            }
           ];
           callPackage = pkgs.newScope {
             inherit python;
